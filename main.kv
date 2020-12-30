@@ -1,0 +1,18 @@
+<UI>:
+    BoxLayout:
+        size: (root.width*0.3, 50)
+        size_hint: None,None
+        pos_hint: {'top':1,'left':0}
+        orientation: 'vertical'
+        Label:
+            id: battery
+            text: "Battery: {}".format(root.battery)
+            text_size: self.size
+            halign: 'left'
+            valign: 'top'
+        Label:
+            id: battery2
+            text: "Battery: {}".format(root.battery)
+            text_size: self.size
+            halign: 'left'
+            valign: 'top'
