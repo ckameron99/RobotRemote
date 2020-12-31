@@ -3,6 +3,9 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix import label
 from kivy.graphics import *
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.core.window import Window
 
 import socket
@@ -18,8 +21,6 @@ class API():
         return False
 
 
-
-
 class UI(Screen):
     def __init__(self,**kwargs):
         self.api=API(self)
@@ -28,6 +29,19 @@ class UI(Screen):
         self.pitchStatus=0.0
         self.rollStatus=0.0
         super().__init__(**kwargs)
+
+    def confirmBox(self,confirmFunc):
+        def cf(button):
+            popup.dismiss()
+            confirmFunc()
+
+        content=BoxLayout()
+        popup=Popup(title='Are you sure?', content=content)
+        confirmButton=Button(text="Confirm", on_press=cf)
+        cancelButton=Button(text="Cancel", on_press=popup.dismiss)
+        content.add_widget(confirmButton)
+        content.add_widget(cancelButton)
+        popup.open()
 
     def updateBattery(self,delta):
         self.battery+=delta
