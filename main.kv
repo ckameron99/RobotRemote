@@ -65,3 +65,18 @@
             id: updateButton
             text: "Update"
             on_press: root.update()
+    BoxLayout:
+        size: (root.width*0.3, 150)
+        size_hint: None, None
+        pos_hint: {'top':1, 'center_x': 0.5}
+        ScrollView:
+            size_hint: 1, 1
+            do_scroll_x: False
+            do_scroll_y: True
+            Label:
+                id: genericText
+                padding: 10,10
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: self.width, None
+                text: ""

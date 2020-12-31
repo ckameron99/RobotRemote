@@ -2,14 +2,17 @@ from kivy.app import App
 from kivy.uix.screenmanager import Screen
 from kivy.uix import label
 from kivy.graphics import *
+from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
 
 import socket
 
 
 class API():
-    def __init__(self):
+    def __init__(self,ui):
         self.robotIP="192.168.1.254"
         self.appIP=socket.gethostbyname(socket.gethostname())
+        self.ui=ui
 
     def attemptConnect(self):
         return False
@@ -19,7 +22,7 @@ class API():
 
 class UI(Screen):
     def __init__(self,**kwargs):
-        self.api=API()
+        self.api=API(self)
         self.batteryStatus=0.0
         self.positionStatus=(0,0)
         self.pitchStatus=0.0
