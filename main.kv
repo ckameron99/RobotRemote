@@ -1,18 +1,67 @@
 <UI>:
     BoxLayout:
-        size: (root.width*0.3, 50)
+        size: (root.width*0.3, 150)
         size_hint: None,None
         pos_hint: {'top':1,'left':0}
         orientation: 'vertical'
         Label:
-            id: battery
-            text: "Battery: {}".format(root.battery)
+            id: batteryStatus
+            text: "Battery: {}".format(root.batteryStatus)
             text_size: self.size
-            halign: 'left'
-            valign: 'top'
+            halign: 'center'
+            valign: 'middle'
         Label:
-            id: battery2
-            text: "Battery: {}".format(root.battery)
+            id: positionStatus
+            text: "Position: {}, {}".format(*root.positionStatus)
             text_size: self.size
-            halign: 'left'
-            valign: 'top'
+            halign: 'center'
+            valign: 'middle'
+        Label:
+            id: pitchStatus
+            text: "Pitch: {}".format(root.pitchStatus)
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        Label:
+            id: rollStatus
+            text: "Roll: {}".format(root.rollStatus)
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+        Button:
+            id: connectButton
+            text: "Connect to RPi: OFF"
+            on_press: root.connectUI()
+        Button:
+            id: remoteButton
+            text: "Remote: OFF"
+            on_press: root.connectRemote()
+    BoxLayout:
+        size: (root.width*0.3, 150)
+        size_hint: None,None
+        pos_hint: {'top':1,'right':1}
+        orientation: 'vertical'
+        Button:
+            id: lidarButton
+            text: "LiDAR: OFF"
+            on_press: root.connectLidar()
+        Button:
+            id: orientationButton
+            text: "Orientation unit: OFF"
+            on_press: root.connectOrientation()
+        Button:
+            id: motorsButton
+            text: "Motors: OFF"
+            on_press: root.connectMotors()
+        Button:
+            id: rebootButton
+            text: "Reboot"
+            on_press: root.reboot()
+        Button:
+            id: powerDownButton
+            text: "Power down"
+            on_press: root.powerDown()
+        Button:
+            id: updateButton
+            text: "Update"
+            on_press: root.update()
