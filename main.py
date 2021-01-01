@@ -24,6 +24,7 @@ class API():
     def attemptConnect(self):
         if not self.connected:
             self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
+            self.listeningDaemon.start()
             self.connected=True
             try:
                 self.sendData(b'initConnection: True')
