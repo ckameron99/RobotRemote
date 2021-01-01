@@ -38,7 +38,7 @@ class API():
     def listen(self, name):
         s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.appID, self.listenPort))
-        s.listen
+        s.listen()
         while True:
             data=''
             conn,addr=s.accept()
