@@ -14,7 +14,7 @@ import threading
 
 class API():
     def __init__(self,ui):
-        self.robotIP="192.168.1.254"
+        self.robotIP="192.168.4.1"
         self.appIP=socket.gethostbyname(socket.gethostname())
         self.listenPort=5551
         self.sendPort=5552
