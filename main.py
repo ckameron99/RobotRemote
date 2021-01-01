@@ -22,18 +22,21 @@ class API():
         self.connected=False
 
     def attemptConnect(self):
-        if not self.connected:
-            self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
-            self.listeningDaemon.start()
-            self.connected=True
-            try:
-                self.sendData(b'initConnection: True')
+        try:
+            if not self.connected:
+                self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
+                self.listeningDaemon.start()
                 self.connected=True
-                return True
-            except ConnectionRefusedError:
-                self.connected=False
-                return False
-        return True
+                try:
+                    self.sendData(b'initConnection: True')
+                    self.connected=True
+                    return True
+                except ConnectionRefusedError:
+                    self.connected=False
+                    return False
+            return True
+        except Exception as e:
+            ui.addText(str(e))
 
     def listen(self, name):
         s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
