@@ -22,28 +22,26 @@ class API():
         self.connected=False
 
     def attemptConnect(self):
-        try:
-            if not self.connected:
-                self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
-                self.listeningDaemon.start()
+        if not self.connected:
+            self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
+            self.listeningDaemon.start()
+            self.connected=True
+            try:
+                self.sendData(b'initConnection: True')
                 self.connected=True
-                try:
-                    self.sendData(b'initConnection: True')
-                    self.connected=True
-                    return True
-                except ConnectionRefusedError:
-                    self.connected=False
-                    return False
-            return True
-        except Exception as e:
-            ui.addText(str(e))
+                return True
+            except ConnectionRefusedError:
+                self.connected=False
+                return False
+        return True
+
 
     def listen(self, name):
         s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((self.appID, self.listenPort))
+        s.bind((self.appIP, self.listenPort))
         s.listen()
         while True:
-            data=''
+            data=b''
             conn,addr=s.accept()
             with conn:
                 while True:
@@ -53,6 +51,7 @@ class API():
                     else:
                         break
             self.processData(data)
+
 
     def processData(self, data):
         splitIndex=data.index(b': ')
@@ -175,7 +174,9 @@ class UI(Screen):
         self.ids.motorsButton.text="Motors: {}".format(status.decode("uft-8"))
 
     def addText(self,text):
-        self.ids.genericText.text+=text.decode("utf-8")+"\n"
+        if type(text)==type(b''):
+            text=text.decode("utf-8")
+        self.ids.genericText.text+=text+"\n"
 
 
 class MainApp(App):
