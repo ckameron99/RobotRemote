@@ -24,10 +24,13 @@ class API():
     def attemptConnect(self):
         if not self.connected:
             self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
+            self.connected=True
             try:
                 self.sendData(b'initConnection: True')
+                self.connected=True
                 return True
             except ConnectionRefusedError:
+                self.connected=False
                 return False
         return True
 
@@ -65,10 +68,15 @@ class API():
         funcs[key](params)
 
     def sendData(self, data):
-        s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.robotIP, self.sendPort))
-        s.sendall(data)
-        s.close()
+        if self.connected:
+            s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.robotIP, self.sendPort))
+            s.sendall(data)
+            s.close()
+            return True
+        else:
+            self.ui.addText(b'Robot is not connected')
+            return False
 
 
 class UI(Screen):
@@ -161,6 +169,9 @@ class UI(Screen):
 
     def setMotorStatus(self, status):
         self.ids.motorsButton.text="Motors: {}".format(status.decode("uft-8"))
+
+    def addText(self,text):
+        self.ids.genericText.text+=text.decode("utf-8")+"\n"
 
 
 class MainApp(App):
