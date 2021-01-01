@@ -48,7 +48,15 @@ class API():
         key=data[:splitIndex]
         params=data[splitIndex+2:]
         funcs={
-        b'connectionStatus': self.ui.setConnectionStatus
+        b'connectionStatus': self.ui.setConnectionStatus,
+        b'batteryStatus': self.ui.setBatteryStatus,
+        b'positionStatus': self.ui.setPositionStatus,
+        b'pitchStatus': self.ui.setPitchStatus,
+        b'rollStatus': self.ui.setRollStatus,
+        b'remoteStatus': self.ui.setRemoteStatus,
+        b'lidarStatus': self.ui.setLidarStatus,
+        b'orientationStatus': self.ui.setOrientationStatus,
+        b'motorStatus': self.ui.setMotorStatus
         }
         funcs[key](params)
 
@@ -81,41 +89,74 @@ class UI(Screen):
         content.add_widget(cancelButton)
         popup.open()
 
-    def updateBattery(self,delta):
-        self.battery+=delta
-        self.battery=round(self.battery,3)
-        self.ids.batteryStatus.text="Battery: {}".format(self.battery)
-
     def connectUI(self):
         connectionSuccess=self.api.attemptConnect()
         self.ids.connectButton.text="Connection to RPi: {}".format(
             "SUCCESS" if connectionSuccess else "FAILED"
             )
 
-    def setConnectionStatus(self, status):
-        if status==b'True':
-            self.ids.connectButton.text="Connection to RPI: SUCCESS"
-
     def connectRemote(self):
-        self.ids.remoteButton.text="Remote: ON"
+        self.api.sendData(b'connectRemote: True')
 
     def connectLidar(self):
-        pass
+        self.api.sendData(b'connentLidar: True')
 
     def connectOrientation(self):
-        pass
+        self.api.sendData(b'connectOrientation: True')
 
     def connectMotors(self):
-        pass
+        self.api.sendData(b'connectMotors: True')
 
     def reboot(self):
-        pass
+        self.confirmBox(
+        confirmFunc=self.rebootConfirmed
+        )
+
+    def rebootConfirmed(self):
+        self.api.sendData(b'powerOptions: reboot')
 
     def powerDown(self):
-        pass
+        self.confirmBox(
+        confirmFunc=self.powerDownConfirmed
+        )
+
+    def rebootConfirmed(self):
+        self.api.sendData(b'powerOptions: powerDown')
 
     def update(self):
-        pass
+        self.confirmBox(
+        confirmFunc=self.updateConfirmed
+        )
+
+    def rebootConfirmed(self):
+        self.api.sendData(b'powerOptions: update')
+
+    def setConnectionStatus(self, status):
+        self.ids.connectButton.text="Connection to RPI: {}".format(status.decode("uft-8"))
+
+    def setBatteryStatus(self, status):
+        self.ids.batteryStautus.text="Battery: {}".format(status.decode("uft-8"))
+
+    def setPositionStatus(self, status):
+        self.ids.positionStautus.text="Position: {}".format(status.decode("uft-8"))
+
+    def setPitchStatus(self, status):
+        self.ids.pitchStautus.text="Pitch: {}".format(status.decode("uft-8"))
+
+    def setRollStatus(self, status):
+        self.ids.rollStautus.text="Roll: {}".format(status.decode("uft-8"))
+
+    def setRemoteStatus(self, status):
+        self.ids.remoteButton.text="Remote: {}".format(status.decode("uft-8"))
+
+    def setLidarStatus(self, status):
+        self.ids.lidarButton.text="LiDAR: {}".format(status.decode("uft-8"))
+
+    def setOrientationStatus(self, status):
+        self.ids.orientationButton.text="Orientation unit: {}".format(status.decode("uft-8"))
+
+    def setMotorStatus(self, status):
+        self.ids.motorsButton.text="Motors: {}".format(status.decode("uft-8"))
 
 
 class MainApp(App):
