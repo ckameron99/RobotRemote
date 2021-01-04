@@ -10,30 +10,45 @@ from kivy.core.window import Window
 
 import socket
 import threading
+import time
 
 
 class API():
     def __init__(self,ui):
         self.robotIP="192.168.4.1"
-        self.appIP=socket.gethostbyname(socket.gethostname())
+        self.appIP=self.getIP()
+        print(self.appIP)
         self.listenPort=5551
         self.sendPort=5552
         self.ui=ui
         self.connected=False
 
+    def getIP(self):
+        s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("192.168.4.2", 1))
+        IP=s.getsockname()[0]
+        s.close()
+        return IP
+
     def attemptConnect(self):
-        if not self.connected:
-            self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
-            self.listeningDaemon.start()
-            self.connected=True
-            try:
-                self.sendData(b'initConnection: True')
+        try:
+            if not self.connected:
+                self.listeningDaemon=threading.Thread(target=self.listen, daemon=True, args=(1,))
+                self.listeningDaemon.start()
                 self.connected=True
-                return True
-            except ConnectionRefusedError:
-                self.connected=False
-                return False
-        return True
+                try:
+                    time.sleep(0.5)
+                    self.sendData(b'initConnection: True')
+                    self.connected=True
+                    return True
+                except ConnectionRefusedError:
+                    self.connected=False
+                    return False
+            return True
+        except Exception as e:
+            self.ui.addText(str(e))
+            self.connected=False
+            return False
 
 
     def listen(self, name):
@@ -73,6 +88,7 @@ class API():
     def sendData(self, data):
         if self.connected:
             s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
             s.connect((self.robotIP, self.sendPort))
             s.sendall(data)
             s.close()
@@ -147,31 +163,31 @@ class UI(Screen):
         self.api.sendData(b'powerOptions: update')
 
     def setConnectionStatus(self, status):
-        self.ids.connectButton.text="Connection to RPI: {}".format(status.decode("uft-8"))
+        self.ids.connectButton.text="Connection to RPI: {}".format(status.decode("utf-8"))
 
     def setBatteryStatus(self, status):
-        self.ids.batteryStautus.text="Battery: {}".format(status.decode("uft-8"))
+        self.ids.batteryStautus.text="Battery: {}".format(status.decode("utf-8"))
 
     def setPositionStatus(self, status):
-        self.ids.positionStautus.text="Position: {}".format(status.decode("uft-8"))
+        self.ids.positionStautus.text="Position: {}".format(status.decode("utf-8"))
 
     def setPitchStatus(self, status):
-        self.ids.pitchStautus.text="Pitch: {}".format(status.decode("uft-8"))
+        self.ids.pitchStautus.text="Pitch: {}".format(status.decode("utf-8"))
 
     def setRollStatus(self, status):
-        self.ids.rollStautus.text="Roll: {}".format(status.decode("uft-8"))
+        self.ids.rollStautus.text="Roll: {}".format(status.decode("utf-8"))
 
     def setRemoteStatus(self, status):
-        self.ids.remoteButton.text="Remote: {}".format(status.decode("uft-8"))
+        self.ids.remoteButton.text="Remote: {}".format(status.decode("utf-8"))
 
     def setLidarStatus(self, status):
-        self.ids.lidarButton.text="LiDAR: {}".format(status.decode("uft-8"))
+        self.ids.lidarButton.text="LiDAR: {}".format(status.decode("utf-8"))
 
     def setOrientationStatus(self, status):
-        self.ids.orientationButton.text="Orientation unit: {}".format(status.decode("uft-8"))
+        self.ids.orientationButton.text="Orientation unit: {}".format(status.decode("utf-8"))
 
     def setMotorStatus(self, status):
-        self.ids.motorsButton.text="Motors: {}".format(status.decode("uft-8"))
+        self.ids.motorsButton.text="Motors: {}".format(status.decode("utf-8"))
 
     def addText(self,text):
         if type(text)==type(b''):
