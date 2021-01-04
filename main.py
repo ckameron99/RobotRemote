@@ -151,7 +151,7 @@ class UI(Screen):
         confirmFunc=self.powerDownConfirmed
         )
 
-    def rebootConfirmed(self):
+    def powerDownConfirmed(self):
         self.api.sendData(b'powerOptions: powerDown')
 
     def update(self):
@@ -159,7 +159,7 @@ class UI(Screen):
         confirmFunc=self.updateConfirmed
         )
 
-    def rebootConfirmed(self):
+    def updateConfirmed(self):
         self.api.sendData(b'powerOptions: update')
 
     def setConnectionStatus(self, status):
