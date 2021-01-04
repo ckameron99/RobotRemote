@@ -130,7 +130,7 @@ class UI(Screen):
         self.api.sendData(b'connectRemote: True')
 
     def connectLidar(self):
-        self.api.sendData(b'connentLidar: True')
+        self.api.sendData(b'connectLidar: True')
 
     def connectOrientation(self):
         self.api.sendData(b'connectOrientation: True')
