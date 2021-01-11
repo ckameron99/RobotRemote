@@ -28,6 +28,12 @@
             text_size: self.size
             halign: 'center'
             valign: 'middle'
+        Label:
+            id: tempStatus
+            text: "Tempterature: {}".format(root.tempStatus)
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
         Button:
             id: connectButton
             text: "Connect to RPi: OFF"
@@ -65,6 +71,10 @@
             id: updateButton
             text: "Update"
             on_press: root.update()
+        Button:
+            id: speechButton
+            text: "Speak"
+            on_press: root.speech()
     BoxLayout:
         size: (root.width*0.3, root.height)
         size_hint: None, None

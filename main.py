@@ -81,7 +81,8 @@ class API():
         b'remoteStatus': self.ui.setRemoteStatus,
         b'lidarStatus': self.ui.setLidarStatus,
         b'orientationStatus': self.ui.setOrientationStatus,
-        b'motorStatus': self.ui.setMotorStatus
+        b'motorStatus': self.ui.setMotorStatus,
+        b'tempStatus': self.ui.setTempStatus
         }
         funcs[key](params)
 
@@ -105,6 +106,7 @@ class UI(Screen):
         self.positionStatus=(0,0)
         self.pitchStatus=0.0
         self.rollStatus=0.0
+        self.tempStatus=0
         super().__init__(**kwargs)
 
     def confirmBox(self,confirmFunc):
@@ -159,6 +161,9 @@ class UI(Screen):
         confirmFunc=self.updateConfirmed
         )
 
+    def speech(self):
+        pass
+
     def updateConfirmed(self):
         self.api.sendData(b'powerOptions: update')
 
@@ -188,6 +193,9 @@ class UI(Screen):
 
     def setMotorStatus(self, status):
         self.ids.motorsButton.text="Motors: {}".format(status.decode("utf-8"))
+
+    def setTempStatus(self,status):
+        self.ids.tempStatus.text="Temperature: {}".format(status)
 
     def addText(self,text):
         if type(text)==type(b''):
