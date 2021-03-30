@@ -7,7 +7,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
-
+from mic_vad_streaming import audio_main
 import socket
 import threading
 import time
@@ -162,7 +162,22 @@ class UI(Screen):
         )
 
     def speech(self):
-        pass
+        print("Listening - Say Something")
+        text = audio_main()
+        lst_of_commands = ["left", "right", "up", "down", "forward", "backward", "stop"]
+        # Add further possible commands to the line above
+        possible_output = [command for command in lst_of_commands if command in text]
+        if len(possible_output) == 1: # Only seek exactly one command from the user not zero nor more than 1
+            output_text = 'textCommand:{}'.format(possible_output[0])
+            output_bytes = bytes(output_text, 'utf-8')
+            self.addText(output_bytes)
+            self.api.sendData(output_bytes)
+        elif len(possible_output) > 1:
+            self.addText(b'More than one command spoken. Please say again')
+        elif len(possible_output) == 0:
+            self.addText(b'No valid commands. Please say again')
+
+
 
     def updateConfirmed(self):
         self.api.sendData(b'powerOptions: update')
