@@ -8,6 +8,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.core.window import Window
 from mic_vad_streaming import audio_main
+from control_functions import turn, move
 import socket
 import threading
 import time
@@ -164,18 +165,37 @@ class UI(Screen):
     def speech(self):
         print("Listening - Say Something")
         text = audio_main()
-        lst_of_commands = ["left", "right", "up", "down", "forward", "backward", "stop"]
+        print(text)
+        text_lower = text.lower()
+        text_split = text.split(" ")
+        allowed_commands = ["turn", "move"]
+        turns = ["left", "right", "around"]
+        moves = ["forward", "backward",]
         # Add further possible commands to the line above
-        possible_output = [command for command in lst_of_commands if command in text]
-        if len(possible_output) == 1: # Only seek exactly one command from the user not zero nor more than 1
-            output_text = 'textCommand:{}'.format(possible_output[0])
-            output_bytes = bytes(output_text, 'utf-8')
-            self.addText(output_bytes)
-            self.api.sendData(output_bytes)
-        elif len(possible_output) > 1:
+        # print(text_split)
+        possible_output = [command for command in allowed_commands if command in text_split]
+        # print(possible_output)
+        # Counts how many instructions have been given. Robot only requires one at a time
+        if len(possible_output) > 1:
             self.addText(b'More than one command spoken. Please say again')
         elif len(possible_output) == 0:
             self.addText(b'No valid commands. Please say again')
+        elif len(possible_output) == 1: # User specifies exactly one command
+            if "turn" in possible_output:
+                instruction, detail = turn(text_split)
+            elif "move" in possible_output:
+                instruction, detail = move(text_split)
+
+            if instruction == "display":
+                output_text = "{}".format(detail)
+                output_bytes = bytes(output_text, 'utf-8')
+                self.addText(output_bytes)
+            elif instruction == "command":
+                robot_instruction = "{}:{}".format(detail[0], detail[1])
+                instruction_bytes = bytes(robot_instruction, 'utf-8')
+                self.addText(instruction_bytes)
+                self.api.sendData(instruction_bytes)
+
 
 
 
